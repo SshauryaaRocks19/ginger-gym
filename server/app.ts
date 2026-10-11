@@ -1,30 +1,32 @@
-import { Elysia,t } from 'elysia'
+import { Elysia, t } from 'elysia'
 import { ApiError } from './errors'
+import { sql } from 'drizzle-orm'
+import { db } from './db'
 
-export const app = new Elysia({ prefix: '/api'})
-    .onError(({ code, error, set})=>{
-        if (error instanceof ApiError){
+export const app = new Elysia({ prefix: '/api' })
+    .onError(({ code, error, set }) => {
+        if (error instanceof ApiError) {
             set.status = error.status
-            return { error: {code: error.code, message: error.message}}
+            return { error: { code: error.code, message: error.message } }
         }
 
-        if(code === 'NOT_FOUND'){
+        if (code === 'NOT_FOUND') {
             set.status = 404;
-            return { error: {code: 'NOT_FOUND', message: 'Route not found.'}}
+            return { error: { code: 'NOT_FOUND', message: 'Route not found.' } }
         }
 
-            if (code === 'VALIDATION') {
+        if (code === 'VALIDATION') {
             set.status = 422
             return {
                 error: {
-                code: 'VALIDATION',
-                message: 'Some fields are invalid.',
-                details: error.all.map((issue) => ({
-                    field: issue.path.slice(1),
-                    message: issue.summary ?? issue.message,
-                })),
-            },
-        }
+                    code: 'VALIDATION',
+                    message: 'Some fields are invalid.',
+                    details: error.all.map((issue) => ({
+                        field: issue.path.slice(1),
+                        message: issue.summary ?? issue.message,
+                    })),
+                },
+            }
         }
 
         if (code === 'PARSE') {
@@ -34,7 +36,13 @@ export const app = new Elysia({ prefix: '/api'})
 
         console.error(error);
         set.status = 500
-        return { error: { code: 'INTERNAL', message: 'Something went wrong. Try again.' } }        
+        return { error: { code: 'INTERNAL', message: 'Something went wrong. Try again.' } }
     })
-    .get('/health', ()=>{ throw new ApiError(409,'TEST_ERROR','just testing')}) 
+    .get('/health', async ()=>{
+        const time = await db.execute(sql`select now() as now`)
+        return {
+            ok:true, time: time
+        }
+
+    })
 
