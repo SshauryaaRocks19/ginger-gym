@@ -1,7 +1,8 @@
-import { Elysia, t } from 'elysia'
+import { Elysia } from 'elysia'
 import { ApiError } from './errors'
 import { sql } from 'drizzle-orm'
 import { db } from './db'
+import { authRoutes } from './routes/auth'
 
 export const app = new Elysia({ prefix: '/api' })
     .onError(({ code, error, set }) => {
@@ -38,11 +39,9 @@ export const app = new Elysia({ prefix: '/api' })
         set.status = 500
         return { error: { code: 'INTERNAL', message: 'Something went wrong. Try again.' } }
     })
-    .get('/health', async ()=>{
-        const time = await db.execute(sql`select now() as now`)
-        return {
-            ok:true, time: time
-        }
-
+    .get('/health', async () => {
+        const [row] = await db.execute(sql`select now() as now`)
+        return { ok: true, databaseTime: row.now }
     })
+    .use(authRoutes)
 
