@@ -4,6 +4,7 @@ import { sql } from 'drizzle-orm'
 import { db } from './db'
 import { authRoutes } from './routes/auth'
 import { sessionRoutes } from './routes/sessions'
+import { bookingRoutes } from './routes/bookings'
 
 export const app = new Elysia({ prefix: '/api' })
     .onError(({ code, error, set }) => {
@@ -46,4 +47,5 @@ export const app = new Elysia({ prefix: '/api' })
     })
     .use(authRoutes)
     .use(sessionRoutes)
+    .use(bookingRoutes)
 
