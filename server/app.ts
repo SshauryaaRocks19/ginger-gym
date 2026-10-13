@@ -5,6 +5,7 @@ import { db } from './db'
 import { authRoutes } from './routes/auth'
 import { sessionRoutes } from './routes/sessions'
 import { bookingRoutes } from './routes/bookings'
+import { myBookingRoutes } from './routes/my-bookings'
 
 export const app = new Elysia({ prefix: '/api' })
     .onError(({ code, error, set }) => {
@@ -48,4 +49,5 @@ export const app = new Elysia({ prefix: '/api' })
     .use(authRoutes)
     .use(sessionRoutes)
     .use(bookingRoutes)
+    .use(myBookingRoutes)
 
