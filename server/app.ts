@@ -3,6 +3,7 @@ import { ApiError } from './errors'
 import { sql } from 'drizzle-orm'
 import { db } from './db'
 import { authRoutes } from './routes/auth'
+import { sessionRoutes } from './routes/sessions'
 
 export const app = new Elysia({ prefix: '/api' })
     .onError(({ code, error, set }) => {
@@ -44,4 +45,5 @@ export const app = new Elysia({ prefix: '/api' })
         return { ok: true, databaseTime: row.now }
     })
     .use(authRoutes)
+    .use(sessionRoutes)
 
