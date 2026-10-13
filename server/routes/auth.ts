@@ -14,7 +14,7 @@ const publicUserFields = {
     email: users.email,
     role: users.role,
 }
-
+    
 function cleanEmail(email: string) {
     return email.trim().toLowerCase()
 }
@@ -46,7 +46,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
         body: t.Object({
             name: t.String({ minLength: 1, maxLength: 100 }),
             email: t.String({ format: 'email' }),
-            // bcrypt ignores everything after 72 bytes
             password: t.String({ minLength: 8, maxLength: 72 }),
         }),
     })
