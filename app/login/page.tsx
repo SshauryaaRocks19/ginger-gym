@@ -28,7 +28,7 @@ export default function SignInPage(){
             <span className="block text-8xl">🫚</span>
             Ginger Gym
         </h1>
-        <p className="mt-2 text-lg font-semibold">Book a session NOW if you like Gingers</p>
+        <p className="mt-2 text-lg font-semibold">Book a session NOW if you wanna get shredded like a ginger</p>
         </div>
         {mode==='login'?
                 <LoginForm/>

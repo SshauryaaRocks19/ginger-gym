@@ -29,13 +29,14 @@ async function seed() {
     const adminHash = await bcrypt.hash(ADMIN_PASSWORD, 10)
     const memberHash = await bcrypt.hash(MEMBER_PASSWORD, 10)
 
-    await db.insert(users).values({ name: 'Priya (Admin)', email: 'admin@gingergym.test', passwordHash: adminHash, role: 'admin' })
+    await db.insert(users).values({ name: 'Aman', email: 'admin@gingergym.test', passwordHash: adminHash, role: 'admin' })
 
-    const [asha, ben] = await db
+    const [george, ramesh] = await db
         .insert(users)
         .values([
-            { name: 'Asha Rao', email: 'asha@gingergym.test', passwordHash: memberHash },
-            { name: 'Ben Thomas', email: 'ben@gingergym.test', passwordHash: memberHash },
+            { name: 'George Washington', email: 'george@gingergym.test', passwordHash: memberHash },
+            { name: 'Ramesh Ublababu', email: 'ramesh@gingergym.test', passwordHash: memberHash },
+            { name: 'Kanye West', email: 'kanye@gingergym.test', passwordHash: memberHash },
         ])
         .returning()
 
@@ -61,21 +62,21 @@ async function seed() {
         .returning()
 
     await db.insert(bookings).values([
-        { userId: asha.id, sessionId: liveNow.id, checkInCode: generateCheckInCode() },
-        { userId: ben.id, sessionId: liveNow.id, checkInCode: generateCheckInCode() },
+        { userId: george.id, sessionId: liveNow.id, checkInCode: generateCheckInCode() },
+        { userId: ramesh.id, sessionId: liveNow.id, checkInCode: generateCheckInCode() },
         ...fillerMembers.map((member) => ({
             userId: member.id,
             sessionId: fullTomorrow.id,
             checkInCode: generateCheckInCode(),
         })),
-        { userId: asha.id, sessionId: eveningTomorrow.id, checkInCode: generateCheckInCode() },
+        { userId: george.id, sessionId: eveningTomorrow.id, checkInCode: generateCheckInCode() },
         { userId: fillerMembers[0].id, sessionId: later[0].id, checkInCode: generateCheckInCode() },
         { userId: fillerMembers[1].id, sessionId: later[0].id, checkInCode: generateCheckInCode() },
     ])
 
-    await db.insert(waitlist).values({ userId: ben.id, sessionId: fullTomorrow.id })
+    await db.insert(waitlist).values({ userId: ramesh.id, sessionId: fullTomorrow.id })
 
-    console.log('Seeded: 1 admin, 22 members, 6 sessions (one full, with Ben on its waitlist).')
+    console.log('Seeded: 1 admin, 23 members, 6 sessions (one full, with Ramesh on its waitlist).')
 }
 
 seed()
