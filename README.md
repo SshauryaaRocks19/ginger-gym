@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ginger Gym
 
-## Getting Started
+Booking system for a gym that runs one-hour sessions of 20 people. Members book, cancel and join waitlists. Admins create sessions and check people in with a code.
 
-First, run the development server:
+## Design note
+
+- Next.js 16 app with API built in: Elysia handles everything under `/api` through one route, so the frontend and backend deploy basically together
+- Frontend uses customised HeroUI components (I wanted the UI to look cartoonish so thats why the customisation), Tailwind, and TanStack Query for fetching, and updating booking.
+- Postgres on Supabase (database only), queried with Drizzle. Passwords are hashed with bcrypt. Login sets an httpOnly cookie with a JWT holding only the user id.
+- Tables: 4 tables:  `users` (member or admin), `sessions` (start time, capacity), `bookings` (user, session, cancelled, check-in code, checked-in time), `waitlist` (user, session, joined time).
+- A partial unique index allows one active booking per member per session, so rebooking after a cancel still works.
+- Seats left are counted from bookings, not stored. Booking and cancelling lock the session row inside a transaction, so the last seat can't be taken twice and a cancel promotes the first waitlisted member in the same step.
+
+## Assumptions
+
+- The gym is in India, so all times are in IST.
+- Capacity is fixed at 20. The admin form offers start times from 06:00 to 21:00.
+- Admins can only run the gym and cant book sessions or join waitlists.
+- You can join a waitlist only when the session is full. Booking a session takes you off its waitlist.
+- Check-in codes work from the session's start until one hour later, are single use, and ignore case.
+- Asking for someone else's booking returns 404 rather than 403.
+- Seat counts refresh every 5 seconds.
+- My bookings shows all your active bookings, including past ones.
+
+## Test logins
+
+Admin: `admin@gingergym.test` / `AdminPass123`
+
+Members, all with password `MemberPass123`:
+
+- `george@gingergym.test`: booked into the session happening now and tomorrow evening
+- `ramesh@gingergym.test`: booked now, and on the waitlist for tomorrow's full 07:00 session
+- `kanye@gingergym.test`: no bookings
+- `member01@gingergym.test` to `member20@gingergym.test`: fill tomorrow's 07:00 session
+
+## Running it
+
+Copy `.env.example` to `.env.local` and set `DATABASE_URL` and `JWT_SECRET`, then:
 
 ```bash
+npm install
+npm run db:migrate
+npm run db:seed
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`db:seed` deletes all data before adding the test accounts. Run it again before a demo so there is a session in the current hour to check in to.
