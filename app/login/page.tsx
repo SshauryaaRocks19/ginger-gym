@@ -24,7 +24,10 @@ export default function SignInPage(){
     <div className="flex min-h-screen flex-col items-center justify-center gap-6 p-4">
         <GymIcons />
         <div className="text-center">
-        <h1 className="text-5xl sm:text-6xl">🫚 Ginger Gym</h1>
+        <h1 className="text-6xl sm:text-7xl">
+            <span className="block text-8xl">🫚</span>
+            Ginger Gym
+        </h1>
         <p className="mt-2 text-lg font-semibold">Book a session NOW if you like Gingers</p>
         </div>
         {mode==='login'?

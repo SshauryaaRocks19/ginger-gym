@@ -3,7 +3,7 @@
 
 @theme inline {
     --font-sans: var(--font-fira-sans);
-    --font-heading: var(--font-black-ops-one);
+    --font-heading: 'Isometra', sans-serif;
 }
 
 :root {
